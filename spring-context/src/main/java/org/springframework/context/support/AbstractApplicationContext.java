@@ -547,6 +547,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			StartupStep contextRefresh = this.applicationStartup.start("spring.context.refresh");
 
 			// Prepare this context for refreshing.
+			/**
+			 * 1.配置容器的启动参数（启动时间、活跃状态、关闭装备等）
+			 * 2.配置需要验证的环境变量（需要用户实现initPropertySource）
+			 */
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.
@@ -706,6 +710,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(this));
 
 		// Detect a LoadTimeWeaver and prepare for weaving, if found.
+		/**
+		 * 增加对AspectJ的支持，在java中织入分为三种方式，分为编译器织入、类加载器织入、运行期织入，编译器织入是指在java编译器采用特殊的编译器，
+		 * 将切面织入到java类中，而类加载器织入则指通过特殊的类加载，在类字节码加载到JVM时，织入切面，运行期织入则是采和cglib和jdk进行切面织入
+		 *
+		 * AspectJ提供了两种织入方式，第一种是通过特殊编译器，在编译器中将AspectJ语言编写的切面类织入到Java类中，第二种是类加载器织入，
+		 * 即下面的LoadTimeWeaver.
+		 */
 		if (!NativeDetector.inNativeImage() && beanFactory.containsBean(LOAD_TIME_WEAVER_BEAN_NAME)) {
 			beanFactory.addBeanPostProcessor(new LoadTimeWeaverAwareProcessor(beanFactory));
 			// Set a temporary ClassLoader for type matching.
